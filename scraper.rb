@@ -43,6 +43,7 @@ def scrape_list(url)
     }.merge(scrape_person(person_url))
     data[:start_date] = data[:mandate_start] if data[:mandate_start] > '2015-01-01'
     data[:end_date] = data[:mandate_end] if data[:mandate_end] < '2015-12-31'
+    # puts data
     ScraperWiki.save_sqlite([:id, :term], data)
   end
 end
@@ -51,7 +52,7 @@ def scrape_person(url)
   noko = noko_for(url)
   data = { 
     image: noko.css('div.foto-diputados-principal img/@src').text,
-    phone: noko.css('div.info-diputados-principal1').text[/Teléfono: (.*)$/, 1].tidy,
+    phone: noko.css('div.info-diputados-principal1').text[/Teléfono: (.*)$/, 1].to_s.tidy,
     email: noko.css('div.info-diputados-principal2 a[href*="/contacto"]').text.tidy,
   }
   return data
