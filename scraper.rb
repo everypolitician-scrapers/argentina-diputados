@@ -1,6 +1,8 @@
 #!/bin/env ruby
 # encoding: utf-8
 
+require 'date'
+require 'combine_popolo_memberships'
 require 'scraperwiki'
 require 'nokogiri'
 require 'open-uri'
@@ -26,9 +28,25 @@ def noko_for(url)
   # Nokogiri::HTML(open(url).read, nil, 'utf-8')
 end
 
+# The terms of deputies are 4 years long, but offset by two years from
+# half of their colleagues, so we're assuming that each year is a
+# different term. Each session runs from the 1st of March to the 30th
+# of November each year, [1] so treat those as the start and end dates
+# of each "term". 2015 is the 133rd session of the Chamber of
+# Deputies, 2016 is the 134th session, etc.
+# [1] https://en.wikipedia.org/wiki/National_Congress_of_Argentina
+terms = (2015..Date.today.year).map do |year|
+  {
+    # The session ID goes up 1 per year and 133 = 2015 - 1882
+    id: year - 1882,
+    start_date: Date.new(year, 3, 1).to_s,
+    end_date: Date.new(year, 11, 30).to_s,
+  }
+end
+
 def scrape_list(url)
   noko = noko_for(url)
-  noko.css('#tablaPpal table td a[href*="/diputados/"]').each do |a|
+  noko.css('#tablaPpal table td a[href*="/diputados/"]').map do |a|
     person_url = URI.join url, a.attr('href')
     data = { 
       id: a.attr('href').split("/").last,
@@ -37,14 +55,12 @@ def scrape_list(url)
       district: a.xpath('following::td')[0].text.tidy,
       mandate_start: date_from(a.xpath('following::td')[1].text.tidy).to_s,
       mandate_end: date_from(a.xpath('following::td')[2].text.tidy).to_s,
+      start_date: date_from(a.xpath('following::td')[1].text.tidy).to_s,
+      end_date: date_from(a.xpath('following::td')[2].text.tidy).to_s,
       party: a.xpath('following::td')[3].text.tidy,
-      term: 133,
       source: person_url.to_s,
     }.merge(scrape_person(person_url))
-    data[:start_date] = data[:mandate_start] if data[:mandate_start] > '2015-01-01'
-    data[:end_date] = data[:mandate_end] if data[:mandate_end] < '2015-12-31'
-    # puts data
-    ScraperWiki.save_sqlite([:id, :term], data)
+    data
   end
 end
 
@@ -58,4 +74,11 @@ def scrape_person(url)
   return data
 end
 
-scrape_list('http://www.hcdn.gob.ar/diputados/listadip.html')
+membership_from_page = scrape_list('http://www.hcdn.gob.ar/diputados/listadip.html')
+
+data = CombinePopoloMemberships.combine(
+  id: membership_from_page,
+  term: terms,
+)
+
+ScraperWiki.save_sqlite([:id, :term], data)
