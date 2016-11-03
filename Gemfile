@@ -14,3 +14,4 @@ gem "nokogiri"
 gem "open-uri-cached"
 gem "fuzzy_match"
 gem 'wikidata-client', '~> 0.0.7', require: 'wikidata'
+gem 'combine_popolo_memberships', '~> 0.2.0', git: "https://github.com/everypolitician/combine_popolo_memberships.git"
