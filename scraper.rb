@@ -10,6 +10,9 @@ require 'pry'
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 
+require 'require_all'
+require_rel 'lib'
+
 class String
   def tidy
     self.gsub(/[[:space:]]+/, ' ').strip
