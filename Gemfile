@@ -6,7 +6,9 @@ source 'https://rubygems.org'
 
 ruby '2.3.1'
 
-gem 'scraperwiki', git: 'https://github.com/openaustralia/scraperwiki-ruby.git',
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
+
+gem 'scraperwiki', github: 'openaustralia/scraperwiki-ruby',
                    branch: 'morph_defaults'
 gem 'execjs'
 gem 'pry'
