@@ -23,5 +23,9 @@ end
 
 url = 'http://www.hcdn.gob.ar/diputados/listadip.html'
 MembersPage.new(response: Scraped::Request.new(url: url).response).members.each do |member|
-  ScraperWiki.save_sqlite([:id, :term], member.member_section.to_h.merge(member.member_page.to_h))
+  data = [
+    member.member_section,
+    member.member_page
+  ].map(&:to_h).reduce(&:merge)
+  ScraperWiki.save_sqlite([:id, :term], data)
 end
