@@ -5,20 +5,8 @@ class MemberSection < Scraped::HTML
     noko.attr('href').split("/").last
   end
 
-  field :name do
-    member_page.name
-  end
-
   field :sort_name do
     noko.text.tidy
-  end
-
-  field :email do
-    member_page.email
-  end
-
-  field :phone do
-    member_page.phone
   end
 
   field :district do
@@ -70,9 +58,5 @@ class MemberSection < Scraped::HTML
 
   def mandate_end
     date_from(noko.xpath('following::td')[2].text.tidy).to_s
-  end
-
-  def member_page
-    @member_page ||= MemberPage.new(response: Scraped::Request.new(url: source).response)
   end
 end
