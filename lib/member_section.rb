@@ -30,7 +30,7 @@ class MemberSection < Scraped::HTML
   end
 
   field :source do
-     URI.join(url, noko.attr('href')).to_s
+    URI.join(url, noko.attr('href')).to_s
   end
 
   field :start_date do
