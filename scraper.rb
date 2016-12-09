@@ -22,10 +22,8 @@ def noko_for(url)
 end
 
 url = 'http://www.hcdn.gob.ar/diputados/listadip.html'
-MembersPage.new(response: Scraped::Request.new(url: url).response).members.each do |member|
-  data = [
-    member.section,
-    member.page
-  ].map(&:to_h).reduce(&:merge)
-  ScraperWiki.save_sqlite([:id, :term], data)
+MembersPage.new(response: Scraped::Request.new(url: url).response)
+           .members
+           .each do |member|
+  ScraperWiki.save_sqlite([:id, :term], member.to_h)
 end

@@ -1,11 +1,8 @@
-require 'scraped'
-
-class Member < Scraped::HTML
-  field :section do
-    @section ||= MemberSection.new(response: response, noko: noko)
-  end
-
-  field :page do
-    @page ||= MemberPage.new(response: Scraped::Request.new(url: section.source).response)
+class Member
+  def to_h
+    {
+      MemberSection.new(response: response),
+      MemberPage.new(response: Scraped::Request.new(url: section.source).response)
+    }.map(&:to_h).reduce(&:merge)
   end
 end
