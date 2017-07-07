@@ -35,7 +35,7 @@ def scrape_list(url)
     }.merge(scrape_person(person_url))
     data[:start_date] = data[:mandate_start] if data[:mandate_start] > '2015-01-01'
     data[:end_date] = data[:mandate_end] if data[:mandate_end] < '2015-12-31'
-    # puts data
+    puts data.reject { |_, v| v.to_s.empty? }.sort_by { |k, _| k }.to_h if ENV['MORPH_DEBUG']
     ScraperWiki.save_sqlite(%i[id term], data)
   end
 end
