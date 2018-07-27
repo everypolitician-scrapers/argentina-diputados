@@ -51,4 +51,4 @@ def scrape_person(url)
 end
 
 ScraperWiki.sqliteexecute('DROP TABLE data') rescue nil
-scrape_list('http://www.hcdn.gob.ar/diputados/listadip.html')
+scrape_list('https://www.hcdn.gob.ar/diputados/listadip.html')
