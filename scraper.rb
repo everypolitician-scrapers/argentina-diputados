@@ -20,7 +20,8 @@ end
 
 def scrape_list(url)
   noko = noko_for(url)
-  noko.css('#tablaPpal table td a[href*="/diputados/"]').each do |a|
+  noko.css('#tablaDiputados a[href*="/diputados/"]').each do |a|
+    puts a.text.split(', ').reverse.join(' ').tidy
     person_url = URI.join url, a.attr('href')
     data = {
       id:            a.attr('href').split('/').last,
